@@ -46,19 +46,24 @@ def save():
         is_ok = messagebox.askokcancel(title=website, message=f'These are the details entered: \nEmail: {email} \n'
                                                               f'Password: {password}\n Is it ok to save?')
         if is_ok:
-            with open("data.json", "r") as data_file:
-                # Reading old data
-                data = json.load(data_file)
+            try:
+               with open("data.json", "r") as data_file:
+                    # Reading old data
+                    data = json.load(data_file)
+            except FileNotFoundError:
+               with open("data.json", "w") as data_file:
+                   json.dump(new_data, data_file, indent=4)
+            else:
                 # Updating old data with new data
                 data.update(new_data)
 
-            with open("data.json", "w") as data_file:
-                # Saving updated data
-                json.dump(data, data_file, indent=4)
-
-            website_input.delete(0, END)  # These 2 lines delete the text of the entries. 0 is the beginning of the
-            # range, END, the end. (I don't delete the email one so it can continue to be used if you want).
-            pass_input.delete(0, END)
+                with open("data.json", "w") as data_file:
+                    # Saving updated data
+                    json.dump(data, data_file, indent=4)
+            finally:
+                website_input.delete(0, END)  # These 2 lines delete the text of the entries. 0 is the beginning of the
+                # range, END, the end. (I don't delete the email one so it can continue to be used if you want).
+                pass_input.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #

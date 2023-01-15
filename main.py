@@ -48,7 +48,7 @@ def save():
         if is_ok:
             try:
                with open("data.json", "r") as data_file:
-                    # Reading old data
+                #   Reading old data
                     data = json.load(data_file)
             except FileNotFoundError:
                with open("data.json", "w") as data_file:
@@ -64,6 +64,35 @@ def save():
                 website_input.delete(0, END)  # These 2 lines delete the text of the entries. 0 is the beginning of the
                 # range, END, the end. (I don't delete the email one so it can continue to be used if you want).
                 pass_input.delete(0, END)
+
+# ---------------------------- FIND PASSWORD ------------------------------- #
+
+
+def find_password():
+    try:
+        with open("data.json", "r") as data_file:
+            data = json.load(data_file)  # data is a dictionary.
+        website = website_input.get()
+
+    except FileNotFoundError:
+        messagebox.showinfo(title='Error', message='No Data File Found')
+
+    else:
+        if website in data:  #Obviously we could also treat this as an exception by putting
+            # except KeyError:
+            #    messagebox.showinfo(title='Error', message='No details for the website exists')
+            # ... instead of the if, but
+            # it is something very common and it is convenient to use exceptions only if it is something exceptional
+            # or difficult to check.
+            email = data[website]['email']
+            password = data[website]['password']
+            messagebox.showinfo(title=website, message=f'Email:{email}\nPassword: {password}')
+        else:
+            messagebox.showinfo(title='Error', message='No details for the website exists')
+    finally:
+        website_input.delete(0, END)  # These 2 lines delete the text of the entries. 0 is the beginning of the
+        # range, END, the end. (I don't delete the email one so it can continue to be used if you want).
+        pass_input.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -88,24 +117,27 @@ pass_label = Label(text="Password:")
 pass_label.grid(row=3, column=0)
 
 # Entries
-website_input = Entry(width=52)
-website_input.grid(row=1, column=1, columnspan=2)
+website_input = Entry(width=33)
+website_input.grid(row=1, column=1)
 website_input.focus()  # This method is for the cursor to appear in this entry and to be able to start writing without
 # clicking before.
 
 email_input = Entry(width=52)
 email_input.grid(row=2, column=1, columnspan=2)
 email_input.insert(0, "abc@123.com")  # This method is to have an email preloaded by default. The 0 is the value of the
-# "index" and what it does is put the text starting at character 0.
+# "index" and what it does is put the text starting at character 0. Replace abd@123.com with your main email.
 
 pass_input = Entry(width=33)
 pass_input.grid(row=3, column=1)
 
 # Buttons
-gen_pass_button = Button(text="Generate Password", command=gen_pass)
+search_button = Button(text="Search", width=15, command=find_password, relief='ridge')
+search_button.grid(row=1, column=2)
+
+gen_pass_button = Button(text="Generate Password", command=gen_pass, relief='ridge')
 gen_pass_button.grid(row=3, column=2)
 
-add_button = Button(text="Add", command=save, width=44)
+add_button = Button(text="Add", command=save, width=44, relief='ridge')
 add_button.grid(row=4, column=1, columnspan=2)
 
 
